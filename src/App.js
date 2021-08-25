@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NotificationMesage from "./components/NotificationMesage";
@@ -6,17 +6,14 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./App.css";
 import BlogForm from "./components/BlogForm";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [notificationType, setNotificationType] = useState(null);
   const [notificationMessage, setMotificationMessage] = useState(null);
-  const [blogTitle, setBlogTitle] = useState("");
-  const [blogAuthor, setBlogAuthor] = useState("");
-  const [blogUrl, setBlogUrl] = useState("");
+  const blogFormRef = useRef();
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem("loggedBlogAppUser");
@@ -38,8 +35,7 @@ const App = () => {
     }, 5000);
   };
 
-  const onLoginFormSubmit = async (evt) => {
-    evt.preventDefault();
+  const onLoginHandler = async ({ username, password }) => {
     try {
       const loggedUser = await loginService.login({ username, password });
       setUser(loggedUser);
@@ -62,30 +58,76 @@ const App = () => {
     setUser(null);
   };
 
-  const onBlogCreate = async (evt) => {
-    evt.preventDefault();
+  const onBlogCreate = async ({ title, author, url }) => {
     try {
       const response = await blogService.create({
-        title: blogTitle,
-        author: blogAuthor,
-        url: blogUrl,
+        title,
+        author,
+        url,
       });
       setBlogs((prevBlogs) => {
         return [...prevBlogs, response];
       });
-      setBlogTitle("");
-      setBlogUrl("");
-      setBlogAuthor("");
       setNotificationType("success");
       setMotificationMessage(
         `A new blog ${response.title} was added successfully`
       );
+      blogFormRef.current.toggleVisibility();
     } catch (error) {
       setNotificationType("error");
       setMotificationMessage(`Blog entry could not be created.`);
     }
     cleanNotification();
   };
+
+  const onBlogLike = async (blogInfo) => {
+    try {
+      const response = await blogService.like(blogInfo);
+
+      setBlogs((prevBlogs) => {
+        return prevBlogs.map((blog) => {
+          if (blog.id === blogInfo.id) return response;
+          return blog;
+        });
+      });
+      setNotificationType("success");
+      setMotificationMessage(`Blog ${response.title} was liked successfully`);
+    } catch (error) {
+      setNotificationType("error");
+      setMotificationMessage(`Blog could not be liked.`);
+    }
+    cleanNotification();
+  };
+
+  const onBlogRemove = async (blogInfo) => {
+    const allowDeletion = blogInfo.user.username === user.username;
+    if (!allowDeletion) {
+      setNotificationType("error");
+      setMotificationMessage(
+        `You are not allowed to delete someone else's blog.`
+      );
+      cleanNotification();
+      return;
+    }
+
+    try {
+      await blogService.deleteEntry(blogInfo);
+
+      setBlogs((prevBlogs) => {
+        return prevBlogs.filter((blog) => blog.id !== blogInfo.id);
+      });
+      setNotificationType("success");
+      setMotificationMessage(
+        `Blog entry ${blogInfo.title} was removed successfully.`
+      );
+    } catch (error) {
+      setNotificationType("error");
+      setMotificationMessage(`Blog entry could not be removed.`);
+    }
+    cleanNotification();
+  };
+
+  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
 
   return (
     <div>
@@ -101,29 +143,30 @@ const App = () => {
             <button onClick={onLogoutClick}>Log out</button>
           </p>
 
-          <BlogForm
-            onSubmitHandler={onBlogCreate}
-            titleSetter={(val) => setBlogTitle(val)}
-            urlSetter={(val) => setBlogUrl(val)}
-            authorSetter={(val) => setBlogAuthor(val)}
-            title={blogTitle}
-            url={blogUrl}
-            author={blogAuthor}
-          />
+          <Togglable buttonLabel="Create Blog entry" ref={blogFormRef}>
+            <BlogForm
+              createBlog={(newBlogContent) => onBlogCreate(newBlogContent)}
+            />
+          </Togglable>
 
           <br />
           <hr />
 
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+          {sortedBlogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              incrementLike={() => onBlogLike(blog)}
+              remove={() => onBlogRemove(blog)}
+            />
           ))}
         </div>
       ) : (
-        <LoginForm
-          onSubmitHandler={onLoginFormSubmit}
-          usernameSetter={(val) => setUsername(val)}
-          passwordSetter={(val) => setPassword(val)}
-        />
+        <Togglable buttonLabel="Login">
+          <LoginForm
+            loginUser={(userCredentials) => onLoginHandler(userCredentials)}
+          />
+        </Togglable>
       )}
     </div>
   );
