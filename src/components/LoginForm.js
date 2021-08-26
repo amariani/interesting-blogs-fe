@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
 const LoginForm = ({ loginUser }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const onSubmitHandler = (evt) => {
-    evt.preventDefault();
-    loginUser({ username, password });
-  };
+    evt.preventDefault()
+    loginUser({ username, password })
+  }
 
   return (
     <div>
@@ -21,7 +21,7 @@ const LoginForm = ({ loginUser }) => {
             value={username}
             placeholder="Username"
             onChange={({ target }) => {
-              setUsername(target.value);
+              setUsername(target.value)
             }}
           />
         </div>
@@ -33,14 +33,14 @@ const LoginForm = ({ loginUser }) => {
             value={password}
             placeholder="Password"
             onChange={({ target }) => {
-              setPassword(target.value);
+              setPassword(target.value)
             }}
           />
         </div>
         <button type="submit">Login</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

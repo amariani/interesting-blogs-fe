@@ -1,17 +1,24 @@
-import React from "react";
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const NotificationMesage = ({ notificationType, message }) => {
   if (!message) {
-    return null;
+    return null
   }
 
-  const classNameType = notificationType === "error" ? "error" : "success";
+  const classNameType = notificationType === 'error' ? 'error' : 'success'
 
   return (
     <div className={`NotificationMesage__wrapper ${classNameType}`}>
       {message}
     </div>
-  );
-};
+  )
+}
 
-export default NotificationMesage;
+
+NotificationMesage.propTypes = {
+  notificationType: PropTypes.string,
+  message: PropTypes.string.isRequired,
+}
+
+export default NotificationMesage
