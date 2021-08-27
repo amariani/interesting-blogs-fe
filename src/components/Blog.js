@@ -45,13 +45,13 @@ const Blog = ({ blog, incrementLike, remove }) => {
         <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
         {visible ? (
           <>
-            <p>{blog.url}</p>
+            <p>URL: {blog.url}</p>
             <p>
               Likes: {blog.likes}{' '}
-              <button onClick={increaseLikeHandler}>like</button>
+              <button className="likeBtn" onClick={increaseLikeHandler}>like</button>
             </p>
             <p>{blog.user.name}</p>
-            <button onClick={removeBlogHandler} style={removeBtnStyles}>
+            <button className="removeBtn" onClick={removeBlogHandler} style={removeBtnStyles}>
               Remove
             </button>
           </>
