@@ -10,6 +10,7 @@ const Blog = ({ blog, incrementLike, remove }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
+    listStyle: 'none'
   }
 
   const removeBtnStyles = {
@@ -39,7 +40,7 @@ const Blog = ({ blog, incrementLike, remove }) => {
   }
 
   return (
-    <div style={blogItemWrapperStyles}>
+    <li style={blogItemWrapperStyles}>
       <span>
         {blog.title} {blog.author}{' '}
         <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
@@ -57,7 +58,7 @@ const Blog = ({ blog, incrementLike, remove }) => {
           </>
         ) : null}
       </span>
-    </div>
+    </li>
   )
 }
 

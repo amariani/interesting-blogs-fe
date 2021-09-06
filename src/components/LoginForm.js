@@ -10,7 +10,7 @@ const LoginForm = ({ loginUser }) => {
   }
 
   return (
-    <div>
+    <div data-testid="LoginForm">
       <h3>Log in to application</h3>
       <form onSubmit={onSubmitHandler}>
         <div>

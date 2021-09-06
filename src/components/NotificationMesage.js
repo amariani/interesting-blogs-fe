@@ -9,7 +9,7 @@ const NotificationMesage = ({ notificationType, message }) => {
   const classNameType = notificationType === 'error' ? 'error' : 'success'
 
   return (
-    <div className={`NotificationMesage__wrapper ${classNameType}`}>
+    <div data-testid="NotificationMesage" className={`NotificationMesage__wrapper ${classNameType}`}>
       {message}
     </div>
   )
@@ -18,7 +18,7 @@ const NotificationMesage = ({ notificationType, message }) => {
 
 NotificationMesage.propTypes = {
   notificationType: PropTypes.string,
-  message: PropTypes.string.isRequired,
+  message: PropTypes.string,
 }
 
 export default NotificationMesage

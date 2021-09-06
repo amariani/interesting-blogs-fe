@@ -152,21 +152,21 @@ const App = () => {
           <br />
           <hr />
 
-          {sortedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              incrementLike={() => onBlogLike(blog)}
-              remove={() => onBlogRemove(blog)}
-            />
-          ))}
+          <ul id="blogsList" style={{ margin:0,padding:0 }}>
+            {sortedBlogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                incrementLike={() => onBlogLike(blog)}
+                remove={() => onBlogRemove(blog)}
+              />
+            ))}
+          </ul>
         </div>
       ) : (
-        <Togglable buttonLabel="Login">
-          <LoginForm
-            loginUser={(userCredentials) => onLoginHandler(userCredentials)}
-          />
-        </Togglable>
+        <LoginForm
+          loginUser={(userCredentials) => onLoginHandler(userCredentials)}
+        />
       )}
     </div>
   )
